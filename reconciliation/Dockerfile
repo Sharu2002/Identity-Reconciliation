@@ -1,8 +1,30 @@
-FROM eclipse-temurin:21-jdk AS build
-COPY . .
-RUN mvn clean package -DskipTests
+# Build Stage
+FROM eclipse-temurin:17-jdk AS build
 
-FROM openjdk:21-slim
-COPY --from=build /target/reconciliation-0.0.1-SNAPSHOT.jar reconciliation.jar
+WORKDIR /app
+
+# Copy Maven wrapper files and pom.xml
+COPY .mvn .mvn
+COPY mvnw .
+COPY pom.xml .
+
+# Pre-fetch dependencies (better Docker caching)
+RUN ./mvnw dependency:go-offline
+
+# Copy the rest of the source
+COPY src ./src
+
+# Build the application
+RUN ./mvnw clean package -DskipTests
+
+# Runtime Stage
+FROM eclipse-temurin:17-jdk-slim
+
+WORKDIR /app
+
+# Copy only the built JAR from build stage
+COPY --from=build /app/target/*.jar reconciliation.jar
+
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","reconciliation.jar"]
+
+ENTRYPOINT ["java", "-jar", "reconciliation.jar"]
