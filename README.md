@@ -2,6 +2,14 @@ Bitespeed Identify API
 
 This Spring Boot application implements the `/identify` endpoint for Bitespeed to resolve and consolidate user identities based on email and phone number — even when users provide different contact information across orders.
 
+Hosted Endpoint
+
+**POST** `https://identity-reconciliation-37l0.onrender.com/identify`
+
+Github Repository
+
+`https://github.com/Sharu2002/Identity-Reconciliation.git`
+
 Problem Statement
 
 Doc Emmett Brown places orders using different emails and phone numbers to avoid detection.  
